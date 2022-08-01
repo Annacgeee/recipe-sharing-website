@@ -121,7 +121,7 @@
             }
         }
 
-
+//fake change
         function connectToDB() {
             global $db_conn;
 
