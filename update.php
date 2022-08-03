@@ -22,10 +22,26 @@
         <h2>Reset</h2>
         <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
 
-        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php">
+        <form method="POST" action="update.php">
             <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
             <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
             <p><input type="submit" value="Reset" name="reset"></p>
+        </form>
+
+        <hr />
+          <!-- create -->
+        <h2>Create New My Recipes</h2>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
+
+            RecipeID: <input type="number" name="insID"> <br /><br />
+            UserName: <input type="text" name="insUserName"> <br /><br />
+            RecipeName: <input type="text" name="insRecipeName"> <br /><br />
+            Difficulty: <input type="number" name="insDifficulty"> <br /><br />
+            Instruction: <input type="text" name="insInstruction"> <br /><br />
+            Time: <input type="number" name="insTime"> <br /><br />
+
+            <input type="submit" value="Create" name="insertSubmit"></p>
         </form>
 
         <hr />
@@ -34,7 +50,7 @@
         <h2>Update recipe's name in table</h2>
         <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
-        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
             Old Name: <input type="text" name="oldName"> <br /><br />
             New Name: <input type="text" name="newName"> <br /><br />
@@ -47,19 +63,37 @@
 
 
             <!-- selection -->
-        <h2> Search recipes according to difficulty level</h2>
+        <h2> Filter recipes according to difficulty level</h2>
         <p> The difficulty level ranges from 1 to 5, entering numbers out of range is illegal input. </p>
-        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
 
-            Difficulty level: <input type="number" name="difficulty"> <br /><br />
+            Difficulty level: <input type="text" name="difficulty"> <br /><br />
 
-            <input type="submit" value="Search" name="updateSubmit"></p>
+            <input type="submit" value="Search" name="searchSubmit"></p>
+        </form>
+
+          <!-- join -->
+          <h2> Display recipe's allergy information</h2>   
+           <p> Enter the recipe name below find out its allergy information </p>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="joinQueryRequest" name="joinQueryRequest">
+
+             Recipe Name: <input type="text" name="rname"> <br /><br />
+
+            <input type="submit" value="Display" name="searchSubmit"></p>
         </form>
 
 
 
-        
+        <!--aggregation with group by-->
+        <h2>Count the Tuples in Recipe</h2>
+        <form method="GET" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+            <input type="submit" name="countTuples"></p>
+        </form>
+
+        <hr />
 
         <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
@@ -136,6 +170,18 @@
             }
         }
 
+        function printResult($result) { //prints results from a select statement
+            echo "<br>Retrieved data from table demoTable:<br>"; 
+            echo "<table>";
+            echo "<tr><th>ID</th><th>Name</th></tr>";
+
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+
+            echo "</table>";
+        }
+
 
         function connectToDB() {
             global $db_conn;
@@ -176,12 +222,34 @@
         function handleResetRequest() {
             global $db_conn;
             // Drop old table
-            executePlainSQL("DROP TABLE Recipe");
+            executePlainSQL("DELETE FROM Recipe");
+            echo "<br> empty recipe table <br>";
 
             // Create new table
-            echo "<br> creating new table <br>";
+            //echo "<br> creating new table <br>";
             //executePlainSQL("CREATE TABLE Recipe (id int PRIMARY KEY, name char(30))");
-            executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300),Time int))");
+            //executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300),Time int))");
+            OCICommit($db_conn);
+        }
+
+        function handleInsertRequest() {
+            global $db_conn;
+
+            //Getting the values from user and insert data into the table
+            $tuple = array (
+                ":bind1" => $_POST['insID'],
+                ":bind2" => $_POST['insUserName'],
+                ":bind3" => $_POST['insRecipeName'], 
+                ":bind4" => $_POST['insDifficulty'],
+                ":bind5" => $_POST['insInstruction'],
+                ":bind6" => $_POST['insTime'],
+            );
+
+            $alltuples = array (
+                $tuple
+            );
+
+            executeBoundSQL("insert into Recipe values (:bind1, :bind2, :bind3, :bind4, :bind5, :bind6)", $alltuples); 
             OCICommit($db_conn);
         }
 
@@ -190,25 +258,48 @@
 
             $difficulty_level = $_POST['difficulty'];
 
-           $sql = "SELECT Difficulty FROM Recipe WHERE Difficulty = $difficulty_level";
+            $result = executePlainSQL("SELECT * FROM Recipe WHERE Difficulty = $difficulty_level");
 
-           $result = mysqli_query($db_conn,$sql);
+            echo "<br>Retrieved data from table Recipe:<br>"; 
+            echo "<table>";
+            echo "<tr><th>RecipeName</th><th>Instruction</th><th>Time</th></tr>";
 
-           $resultCheck = mysqli_num_rows($result);
-
-           if ($resultCheck > 0) {
-            while($row = mysqli_fetch_assoc()) { // fetch all data available
-                echo "<tr><td>" . $row['RecipeName'] . "</tr><td>" . $row['Instruction'] ."</tr><td>" . $row['Time']."</tr><td>" ;
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row[2] . "</td><td>". $row[4] . "</td><td>" . $row[5] . "</td></tr>"; // correspond to RecipeName, Instruction, Time
             }
-           } else {
-            echo "No Result found";
-           }
-           $db_conn->close();
+
+            echo "</table>";
         }
 
+        function handleCountRequest() {
+            global $db_conn;
 
+            $result = executePlainSQL("SELECT Count(*) FROM Recipe");
 
-           
+            if (($row = oci_fetch_row($result)) != false) {
+                echo "<br> The number of tuples in recipe: " . $row[0] . "<br>";
+            }
+        }
+
+        function handleJoinRequest() {
+            global $db_conn;
+
+            $receipe_name = $_POST['rname'];
+
+            
+            $result = executePlainSQL("SELECT RecipeName, AllergyName
+            FROM Recipe, Label WHERE Recipe.RecipeID = Label.RecipeID AND RecipeName = '$receipe_name'");
+
+            echo "<br>Showing result for display allergy information:<br>"; 
+            echo "<table>";
+            echo "<tr><th>RecipeName</th><th>Allerge</th></tr>";
+
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row['RecipeName'] . "</td><td>". $row['AllergyName'] . "</td><td>";
+            }
+
+            echo "</table>";
+        }
 
     
 
@@ -224,11 +315,14 @@
                     handleInsertRequest();
                 } else if (array_key_exists('selectQueryRequest', $_POST)) {
                     handleSelectRequest();
+                } else if (array_key_exists('joinQueryRequest', $_POST)) {
+                    handleJoinRequest();
                 }
 
                 disconnectFromDB();
             }
         }
+
 
         // HANDLE ALL GET ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
@@ -242,7 +336,7 @@
             }
         }
 
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
+		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['searchSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest'])) {
             handleGETRequest();
