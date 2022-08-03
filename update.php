@@ -22,7 +22,7 @@
         <h2>Reset</h2>
         <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
 
-        <form method="POST" action="update.php">
+        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php">
             <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
             <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
             <p><input type="submit" value="Reset" name="reset"></p>
@@ -30,11 +30,11 @@
 
         <hr />
 
-
+            <!-- update -->
         <h2>Update recipe's name in table</h2>
         <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
             Old Name: <input type="text" name="oldName"> <br /><br />
             New Name: <input type="text" name="newName"> <br /><br />
@@ -43,6 +43,21 @@
         </form>
 
         <hr />
+
+
+
+            <!-- selection -->
+        <h2> Search recipes according to difficulty level</h2>
+        <p> The difficulty level ranges from 1 to 5, entering numbers out of range is illegal input. </p>
+        <form method="POST" action="project_b9d2y_t5n0b_x2h3l/update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
+
+            Difficulty level: <input type="number" name="difficulty"> <br /><br />
+
+            <input type="submit" value="Search" name="updateSubmit"></p>
+        </form>
+
+
 
         
 
@@ -121,7 +136,7 @@
             }
         }
 
-//fake change
+
         function connectToDB() {
             global $db_conn;
 
@@ -154,20 +169,46 @@
             $new_name = $_POST['newName'];
 
             // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
+            executePlainSQL("UPDATE Recipe SET RecipeName='" . $new_name . "' WHERE RecipeName='" . $old_name . "'");
             OCICommit($db_conn);
         }
 
         function handleResetRequest() {
             global $db_conn;
             // Drop old table
-            executePlainSQL("DROP TABLE demoTable");
+            executePlainSQL("DROP TABLE Recipe");
 
             // Create new table
             echo "<br> creating new table <br>";
-            executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
+            //executePlainSQL("CREATE TABLE Recipe (id int PRIMARY KEY, name char(30))");
+            executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300),Time int))");
             OCICommit($db_conn);
         }
+
+        function handleSelectRequest() {
+            global $db_conn;
+
+            $difficulty_level = $_POST['difficulty'];
+
+           $sql = "SELECT Difficulty FROM Recipe WHERE Difficulty = $difficulty_level";
+
+           $result = mysqli_query($db_conn,$sql);
+
+           $resultCheck = mysqli_num_rows($result);
+
+           if ($resultCheck > 0) {
+            while($row = mysqli_fetch_assoc()) { // fetch all data available
+                echo "<tr><td>" . $row['RecipeName'] . "</tr><td>" . $row['Instruction'] ."</tr><td>" . $row['Time']."</tr><td>" ;
+            }
+           } else {
+            echo "No Result found";
+           }
+           $db_conn->close();
+        }
+
+
+
+           
 
     
 
@@ -181,6 +222,8 @@
                     handleUpdateRequest();
                 } else if (array_key_exists('insertQueryRequest', $_POST)) {
                     handleInsertRequest();
+                } else if (array_key_exists('selectQueryRequest', $_POST)) {
+                    handleSelectRequest();
                 }
 
                 disconnectFromDB();
@@ -207,3 +250,4 @@
 		?>
 	</body>
 </html>
+
