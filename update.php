@@ -1,36 +1,27 @@
-<!--Test Oracle file for UBC CPSC304 2018 Winter Term 1
-  Created by Jiemin Zhang
-  Modified by Simona Radu
-  Modified by Jessica Wong (2018-06-22)
-  This file shows the very basics of how to execute PHP commands
-  on Oracle.
-  Specifically, it will drop a table, create a table, insert values
-  update values, and then query for values
 
-  IF YOU HAVE A TABLE CALLED "demoTable" IT WILL BE DESTROYED
-
-  The script assumes you already have a server set up
-  All OCI commands are commands to the Oracle libraries
-  To get the file to work, you must place it somewhere where your
-  Apache server can run it, and you must rename it to have a ".php"
-  extension.  You must also change the username and password on the
-  OCILogon below to be your ORACLE username and password -->
-
-  <html>
+<html>
+    <head>
+        <title>CPSC 304 PHP/Oracle Demonstration</title>
+    </head>
 
     <body>
+
+        <h1>Yummy Yummy</h1>
+        <hr />
+
         <h2>Reset</h2>
         <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
 
-        <form method="POST" action="update.php">
+        <form method="POST" action="update.php">  
             <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
             <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
             <p><input type="submit" value="Reset" name="reset"></p>
         </form>
 
         <hr />
-          <!-- create -->
-        <h2>Create New My Recipes</h2>
+  
+        <!--insert-->
+        <h2>Create New Recipe</h2> 
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
 
@@ -46,8 +37,8 @@
 
         <hr />
 
-            <!-- update -->
-        <h2>Update recipe's name in table</h2>
+        <!--upadte-->
+        <h2>Update Recipe Name</h2>
         <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
 
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
@@ -58,24 +49,70 @@
             <input type="submit" value="Update" name="updateSubmit"></p>
         </form>
 
+        <!--upadte with choice of choosing attribute-->
+        <h2>Update Recipe</h2>
+        <p>please input the recipe's name you would like to update</p>
+        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest2">
+        Recipe Name: <input type="text" name="recipe name"> <br /><br />
+
+        <p>please choose the info about the recipe you would like to update</p>
+        <form method="POST" action="update.php">
+         <select name="Recipe attributes">
+         <option value="RecipeName">Recipe name</option>
+         <option value="Instruction">Instruction</option>
+         <option value="Time">Time</option>
+         <option value="Difficulty">Difficulty</option>
+        </select> 
+
+        <p> Put your update in below box</p>
+        <!--<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">-->
+        New Value: <input type="text" name="newValue"> <br /><br />
+
+        <input type="submit" name="Update" value="update">
+        </form>
+
+        <!-- delete -->
+        <h2>Delete Recipe</h2>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
+            
+            RecipeName: <input type="text" name="recipename"> <br /><br />
+
+            <input type="submit" value="Delete" name="deleteSubmit"></p>
+        </form>
+
         <hr />
 
-
-
-            <!-- selection -->
-        <h2> Filter recipes according to difficulty level</h2>
-        <p> The difficulty level ranges from 1 to 5, entering numbers out of range is illegal input. </p>
+        <!-- selection -->
+        <h2> Filter recipe according to difficulty level</h2>
+        <p> Difficulty level is from 1-5, entering number out of bound is illegal </p>
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
 
             Difficulty level: <input type="text" name="difficulty"> <br /><br />
 
-            <input type="submit" value="Search" name="searchSubmit"></p>
+            <input type="submit" value="Search" name="selectSubmit"></p>
         </form>
 
-          <!-- join -->
-          <h2> Display recipe's allergy information</h2>   
-           <p> Enter the recipe name below find out its allergy information </p>
+        <!-- projection -->
+        <h2> Choose</h2>
+        <p> Choose the following attributes. </p>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="chooseQueryRequest" name="chooseQueryRequest">
+
+            RecipeID: <input type="checkbox" name="insID"> <br /><br />
+            UserName: <input type="checkbox" name="insUserName"> <br /><br />
+            RecipeName: <input type="checkbox" name="insRecipeName"> <br /><br />
+            Difficulty: <input type="checkbox" name="insDifficulty"> <br /><br />
+            Instruction: <input type="checkbox" name="insInstruction"> <br /><br />
+            Time: <input type="checkbox" name="insTime"> <br /><br />
+
+            <input type="submit" value="Search" name="chooseSubmit"></p>
+        </form>
+
+        <!-- join -->
+        <h2> Display recipe's allergy information</h2>   
+        <p> Enter the recipe name below find out its allergy information </p>
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="joinQueryRequest" name="joinQueryRequest">
 
@@ -84,12 +121,13 @@
             <input type="submit" value="Display" name="searchSubmit"></p>
         </form>
 
-
-
         <!--aggregation with group by-->
         <h2>Count the Tuples in Recipe</h2>
         <form method="GET" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+
+            <!--Difficulty level: <input type="text" name="difficulty"> <br /><br />-->
+            
             <input type="submit" name="countTuples"></p>
         </form>
 
@@ -101,6 +139,7 @@
         $success = True; //keep track of errors so it redirects the page only if there are no errors
         $db_conn = NULL; // edit the login credentials in connectToDB()
         $show_debug_alert_messages = False; // set to True if you want alerts to show you which methods are being triggered (see how it is used in debugAlertMessage())
+        
 
         function debugAlertMessage($message) {
             global $show_debug_alert_messages;
@@ -182,13 +221,12 @@
             echo "</table>";
         }
 
-
         function connectToDB() {
             global $db_conn;
 
             // Your username is ora_(CWL_ID) and the password is a(student number). For example,
 			// ora_platypus is the username and a12345678 is the password.
-            $db_conn = OCILogon("ora_annaleee", "a66716515", "dbhost.students.cs.ubc.ca:1522/stu");
+            $db_conn = OCILogon("ora_xuanya", "a17923146", "dbhost.students.cs.ubc.ca:1522/stu");
 
             if ($db_conn) {
                 debugAlertMessage("Database is Connected");
@@ -215,20 +253,60 @@
             $new_name = $_POST['newName'];
 
             // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE Recipe SET RecipeName='" . $new_name . "' WHERE RecipeName='" . $old_name . "'");
+            executePlainSQL("UPDATE Recipe SET RecipeName='" . $new_name . "' WHERE RecipeName='" . $old_name . "'"); 
+            
             OCICommit($db_conn);
         }
 
+        function handleUpdateRequest2() {
+            global $db_conn;
+
+            if(isset($_POST['Recipe attributes'])) {
+                $attributeToUpdate = $_POST['Recipe attributes'];
+              }
+
+            $choose_recipe = $_POST['recipe name'];
+
+            $new_value = $_POST['newValue'];
+
+            executePlainSQL("UPDATE Recipe SET $attributeToUpdate= $new_value WHERE RecipeName = '$choose_recipe'"); 
+
+            OCICommit($db_conn);
+
+        }
+
+        // <!--upadte with choice of choosing attribute-->
+        // <h2>Update Recipe</h2>
+        // <p>please input the recipe's name you would like to update</p>
+        // <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+        // Recipe Name: <input type="text" name="recipe name"> <br /><br />
+
+        // <p>please choose the info about the recipe you would like to update</p>
+        // <form method="POST" action="update.php">
+        //  <select name="Recipe attributes">
+        //  <option value="RecipeName">Recipe name</option>
+        //  <option value="Instruction">Instruction</option>
+        //  <option value="Time">Time</option>
+        //  <option value="Difficulty">Difficulty</option>
+        // </select> 
+
+        // <p> Put your update in below box</p>
+        // <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+        // New Value: <input type="text" name="newValue"> <br /><br />
+
+        // <input type="submit" name="Update" value="update">
+        // </form>
+        
+
         function handleResetRequest() {
             global $db_conn;
-            // Drop old table
+            // Delete all rows
             executePlainSQL("DELETE FROM Recipe");
             echo "<br> empty recipe table <br>";
 
             // Create new table
             //echo "<br> creating new table <br>";
-            //executePlainSQL("CREATE TABLE Recipe (id int PRIMARY KEY, name char(30))");
-            //executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300),Time int))");
+            //executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300), Time int)");
             OCICommit($db_conn);
         }
 
@@ -258,7 +336,12 @@
 
             $difficulty_level = $_POST['difficulty'];
 
+            //$sql = "SELECT Difficulty FROM Recipe WHERE Difficulty = $difficulty_level";
+            //$result = mysqli_query($db_conn,$sql);
             $result = executePlainSQL("SELECT * FROM Recipe WHERE Difficulty = $difficulty_level");
+
+            //$resultCheck = mysqli_num_rows($result); 
+            //$resultCheck = oci_num_rows($result);
 
             echo "<br>Retrieved data from table Recipe:<br>"; 
             echo "<table>";
@@ -269,15 +352,101 @@
             }
 
             echo "</table>";
+
+            OCICommit($db_conn);
+
+        }
+
+
+        function handleChooseRequest() {
+            global $db_conn;
+
+            $checkList = array (
+                $_POST['insID'],
+                $_POST['insUserName'],
+                $_POST['insRecipeName'], 
+                $_POST['insDifficulty'],
+                $_POST['insInstruction'],
+                $_POST['insTime'],
+            );
+
+
+
+            $check = array (
+                'RecipeID', 
+                'UserName',
+                'RecipeName', 
+                'Difficulty',
+                'Instruction',
+                'Time',
+            );
+
+            $attributeName = "";
+
+            for ($x = 0; $x < 6; $x++) {
+                if ($checkList[$x] == "on") {
+                    $attributeName .= $check[$x] ." ,";
+                }
+            }
+
+            $attributeName = rtrim($attributeName, ",");
+
+            $sql = "SELECT $attributeName FROM Recipe";
+
+            $result = executePlainSQL($sql);
+
+            $title = "";
+            for ($x = 0; $x < 6; $x++) {
+                if ($checkList[$x] == "on") {
+                    $title .= "<th>" . $check[$x] . "</th>";
+                }
+            }
+
+        
+            echo "<table>";
+            echo "<tr>" . $title . "</tr>";
+
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>" . $row[2] . "</td><td>". $row[3] . "</td><td>" . $row[4]. "</td><td>". $row[5] . "</td></tr>"; // correspond to RecipeName, Instruction, Time
+            }
+ 
+            echo "</table>";
+
+            OCICommit($db_conn);
+
+        }
+
+        function handleDeleteRequest() {
+            global $db_conn;
+
+            $recipe_name = $_POST['recipename'];
+
+            //$sql = "DELETE FROM Recipe WHERE RecipeName = recipe_name";
+
+            //$result = mysqli_query($db_conn, $sql);
+
+            $result = executePlainSQL("DELETE FROM Recipe WHERE RecipeName = '$recipe_name'");
+
+            if ($result === FALSE) {
+                printf("query could not be executed");
+                exit(1);
+            } //???
+            
+            OCICommit($db_conn);
+            
+            //$db_conn->close();
+
         }
 
         function handleCountRequest() {
             global $db_conn;
 
+            //$difficulty_level = $_POST['difficulty'];
+
             $result = executePlainSQL("SELECT Count(*) FROM Recipe");
 
             if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of tuples in recipe: " . $row[0] . "<br>";
+                echo "<br> The number of tuples in recipe with difficulty of: " . $row[0] . "<br>";
             }
         }
 
@@ -295,14 +464,14 @@
             echo "<tr><th>RecipeName</th><th>Allerge</th></tr>";
 
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                echo "<tr><td>" . $row['RecipeName'] . "</td><td>". $row['AllergyName'] . "</td><td>";
+                echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
             }
 
             echo "</table>";
         }
 
-
-	// A better coding practice have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+        // HANDLE ALL POST ROUTES
+	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
             if (connectToDB()) {
                 if (array_key_exists('resetTablesRequest', $_POST)) {
@@ -313,14 +482,19 @@
                     handleInsertRequest();
                 } else if (array_key_exists('selectQueryRequest', $_POST)) {
                     handleSelectRequest();
+                } else if (array_key_exists('deleteQueryRequest', $_POST)) {
+                    handleDeleteRequest();
+                } else if (array_key_exists('chooseQueryRequest', $_POST)) {
+                    handleChooseRequest();
                 } else if (array_key_exists('joinQueryRequest', $_POST)) {
                     handleJoinRequest();
+                } else if (array_key_exists('updateQueryRequest2', $_POST)) {
+                    handleUpdateRequest2();
                 }
 
                 disconnectFromDB();
             }
         }
-
 
         // HANDLE ALL GET ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
@@ -334,7 +508,8 @@
             }
         }
 
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['searchSubmit'])) {
+		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['selectSubmit']) 
+        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest'])) {
             handleGETRequest();
@@ -342,4 +517,3 @@
 		?>
 	</body>
 </html>
-
