@@ -150,7 +150,7 @@
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="nestAggregationWithGroup" name="nestAggregationWithGroup">
 
-            For each difficulty level, find the average cooking time of each and count the number of recipes of that difficulty that is lower than the average cooking time <br /><br />
+            For each difficulty level, find the number of recipes of each difficulty that is lower than the overall average cooking time <br /><br />
 
             <input type="submit" value="Submit" name="nestAggregationWithGroupSubmit"></p>
         </form>
@@ -489,7 +489,7 @@
             //                            WHERE Difficulty = $num and r.Time <= (SELECT AVG(r1.Time)
             //                                                                  FROM Recipe r1
             //                                                                  WHERE Difficulty = $num)");
-$result = executePlainSQL("SELECT AVG(r.Time), r.Difficulty
+$result = executePlainSQL("SELECT COUNT(*), r.Difficulty
                            FROM Recipe r 
                            WHERE r.Time <= (SELECT AVG(r1.Time)
                                              FROM Recipe r1)
