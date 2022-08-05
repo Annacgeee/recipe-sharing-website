@@ -144,6 +144,17 @@
             <input type="submit" value="Search" name="aggregationWithHavingSubmit"></p>
         </form>
 
+
+         <!-- nested aggregation w/ group by -->
+         <h2> Nested aggregation with group by</h2>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="nestAggregationWithGroup" name="nestAggregationWithGroup">
+
+            Find recipes that is lower than average cooking time with same difficulty level of <input type="text" name="level">  <br /><br />
+
+            <input type="submit" value="Search" name="nestAggregationWithGroupSubmit"></p>
+        </form>
+
         <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
 
@@ -469,6 +480,26 @@
 
         }
 
+        function nestAggregationWithGroupRequet(){
+            global $db_conn;
+            $num = $_POST['level'];
+
+            $result = executePlainSQL("SELECT r.RecipeName, r.Time
+                                       FROM Recipe r
+                                       WHERE Difficulty = $num and r.Time <= (SELECT AVG(r1.Time)
+                                                                             FROM Recipe r1
+                                                                             WHERE Difficulty = $num)");
+
+            echo "<br>Showing result:<br>"; 
+            echo "<table>";
+            echo "<tr><th>Recipe</th><th>Time</th></tr>";
+
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
+            }
+                                    
+        }
+
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
@@ -491,6 +522,8 @@
                     handleUpdateRequest2();
                 } else if (array_key_exists('aggregationWithHavingRequest', $_POST)) {
                     handleAggregationWithHavingRequest();
+                }else if (array_key_exists('nestAggregationWithGroup', $_POST)) {
+                    nestAggregationWithGroupRequet();
                 }
 
                 disconnectFromDB();
@@ -510,7 +543,8 @@
         }
 
 		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['selectSubmit']) 
-        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit']) || isset($_POST['update']) || isset($_POST['aggregationWithHavingSubmit'])) {
+        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit']) || isset($_POST['update']) 
+        || isset($_POST['aggregationWithHavingSubmit']) ||isset($_POST['nestAggregationWithGroupSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest'])) {
             handleGETRequest();
