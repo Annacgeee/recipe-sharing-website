@@ -1,4 +1,3 @@
-
 <html>
     <head>
         <title>CPSC 304 PHP/Oracle Demonstration</title>
@@ -52,12 +51,13 @@
         <!--upadte with choice of choosing attribute-->
         <h2>Update Recipe</h2>
         <p>please input the recipe's name you would like to update</p>
-        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest2">
-        Recipe Name: <input type="text" name="recipe name"> <br /><br />
+        <form method="POST" action="update.php">
+            <input type="hidden" id="updateQueryRequest2" name="updateQueryRequest2">
+            Recipe Name: <input type="text" name="recipename"> <br /><br />
 
         <p>please choose the info about the recipe you would like to update</p>
-        <form method="POST" action="update.php">
-         <select name="Recipe attributes">
+        <!-- <form method="POST" action="update.php"> -->
+         <select name="RecipeAttributes">
          <option value="RecipeName">Recipe name</option>
          <option value="Instruction">Instruction</option>
          <option value="Time">Time</option>
@@ -66,9 +66,9 @@
 
         <p> Put your update in below box</p>
         <!--<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">-->
-        New Value: <input type="text" name="newValue"> <br /><br />
+            New Value: <input type="text" name="newValue"> <br /><br />
 
-        <input type="submit" name="Update" value="update">
+        <input type="submit" value="Update" name="update">
         </form>
 
         <!-- delete -->
@@ -84,8 +84,8 @@
         <hr />
 
         <!-- selection -->
-        <h2> Filter recipe according to difficulty level</h2>
-        <p> Difficulty level is from 1-5, entering number out of bound is illegal </p>
+        <h2> Filter</h2>
+        <p> The difficulty level ranges from 1 to 5, entering numbers out of range is illegal input. </p>
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
 
@@ -94,17 +94,17 @@
             <input type="submit" value="Search" name="selectSubmit"></p>
         </form>
 
-        <!-- projection -->
+        <!-- updateion -->
         <h2> Choose</h2>
-        <p> Choose the following attributes. </p>
+        <p> Choose from the following attributes: </p>
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="chooseQueryRequest" name="chooseQueryRequest">
 
-            RecipeID: <input type="checkbox" name="insID"> <br /><br />
-            UserName: <input type="checkbox" name="insUserName"> <br /><br />
-            RecipeName: <input type="checkbox" name="insRecipeName"> <br /><br />
-            Difficulty: <input type="checkbox" name="insDifficulty"> <br /><br />
-            Instruction: <input type="checkbox" name="insInstruction"> <br /><br />
+            RecipeID: <input type="checkbox" name="insID"> 
+            UserName: <input type="checkbox" name="insUserName"> 
+            RecipeName: <input type="checkbox" name="insRecipeName"> 
+            Difficulty: <input type="checkbox" name="insDifficulty"> 
+            Instruction: <input type="checkbox" name="insInstruction"> 
             Time: <input type="checkbox" name="insTime"> <br /><br />
 
             <input type="submit" value="Search" name="chooseSubmit"></p>
@@ -132,6 +132,17 @@
         </form>
 
         <hr />
+
+         <!-- aggregation w/ having -->
+         <h2> Aggregation with having (need to change this later)</h2>
+        <p> Find out the number of users in each city </p>
+        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="aggregationWithHavingRequest" name="aggregationWithHavingRequest">
+
+            only include cities have more than : <input type="text" name="number">  person<br /><br />
+
+            <input type="submit" value="Search" name="aggregationWithHavingSubmit"></p>
+        </form>
 
         <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
@@ -254,49 +265,26 @@
 
             // you need the wrap the old name and new name values with single quotations
             executePlainSQL("UPDATE Recipe SET RecipeName='" . $new_name . "' WHERE RecipeName='" . $old_name . "'"); 
-            
             OCICommit($db_conn);
         }
 
         function handleUpdateRequest2() {
             global $db_conn;
 
-            if(isset($_POST['Recipe attributes'])) {
-                $attributeToUpdate = $_POST['Recipe attributes'];
-              }
+            if(isset($_POST['RecipeAttributes'])) {
+                $attributeToUpdate = $_POST['RecipeAttributes'];
+            }
 
-            $choose_recipe = $_POST['recipe name'];
-
+            $choose_recipe = $_POST['recipename'];
             $new_value = $_POST['newValue'];
 
-            executePlainSQL("UPDATE Recipe SET $attributeToUpdate= $new_value WHERE RecipeName = '$choose_recipe'"); 
+            // executePlainSQL("UPDATE Recipe SET $attributeToUpdate = $new_value WHERE RecipeName = '$choose_recipe'"); 
 
+            executePlainSQL("UPDATE Recipe SET $attributeToUpdate='" . $new_value . "' WHERE RecipeName='" . $choose_recipe. "'"); 
+            
             OCICommit($db_conn);
 
         }
-
-        // <!--upadte with choice of choosing attribute-->
-        // <h2>Update Recipe</h2>
-        // <p>please input the recipe's name you would like to update</p>
-        // <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-        // Recipe Name: <input type="text" name="recipe name"> <br /><br />
-
-        // <p>please choose the info about the recipe you would like to update</p>
-        // <form method="POST" action="update.php">
-        //  <select name="Recipe attributes">
-        //  <option value="RecipeName">Recipe name</option>
-        //  <option value="Instruction">Instruction</option>
-        //  <option value="Time">Time</option>
-        //  <option value="Difficulty">Difficulty</option>
-        // </select> 
-
-        // <p> Put your update in below box</p>
-        // <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-        // New Value: <input type="text" name="newValue"> <br /><br />
-
-        // <input type="submit" name="Update" value="update">
-        // </form>
-        
 
         function handleResetRequest() {
             global $db_conn;
@@ -370,8 +358,6 @@
                 $_POST['insTime'],
             );
 
-
-
             $check = array (
                 'RecipeID', 
                 'UserName',
@@ -382,34 +368,27 @@
             );
 
             $attributeName = "";
-
             for ($x = 0; $x < 6; $x++) {
                 if ($checkList[$x] == "on") {
                     $attributeName .= $check[$x] ." ,";
                 }
             }
-
-            $attributeName = rtrim($attributeName, ",");
+            $attributeName = rtrim($attributeName, ","); // remove last comma
 
             $sql = "SELECT $attributeName FROM Recipe";
-
             $result = executePlainSQL($sql);
-
             $title = "";
             for ($x = 0; $x < 6; $x++) {
                 if ($checkList[$x] == "on") {
                     $title .= "<th>" . $check[$x] . "</th>";
                 }
             }
-
         
             echo "<table>";
             echo "<tr>" . $title . "</tr>";
-
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                 echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>" . $row[2] . "</td><td>". $row[3] . "</td><td>" . $row[4]. "</td><td>". $row[5] . "</td></tr>"; // correspond to RecipeName, Instruction, Time
             }
- 
             echo "</table>";
 
             OCICommit($db_conn);
@@ -441,9 +420,9 @@
         function handleCountRequest() {
             global $db_conn;
 
-            //$difficulty_level = $_POST['difficulty'];
+            $difficulty_level = $_POST['difficulty'];
 
-            $result = executePlainSQL("SELECT Count(*) FROM Recipe");
+            $result = executePlainSQL("SELECT Count(*) FROM Recipe GROUP BY Difficulty");
 
             if (($row = oci_fetch_row($result)) != false) {
                 echo "<br> The number of tuples in recipe with difficulty of: " . $row[0] . "<br>";
@@ -470,6 +449,26 @@
             echo "</table>";
         }
 
+        function handleAggregationWithHavingRequest(){
+            global $db_conn;
+            $num = $_POST['number'];
+
+            $result = executePlainSQL("SELECT COUNT(ID), City 
+                                     FROM Users
+                                     GROUP BY City
+                                     HAVING COUNT(ID) >= $num");
+
+            echo "<br>Showing result:<br>"; 
+            echo "<table>";
+            echo "<tr><th>number of users</th><th>City</th></tr>";
+
+            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+                echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
+            }
+                                     
+
+        }
+
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
@@ -490,6 +489,8 @@
                     handleJoinRequest();
                 } else if (array_key_exists('updateQueryRequest2', $_POST)) {
                     handleUpdateRequest2();
+                } else if (array_key_exists('aggregationWithHavingRequest', $_POST)) {
+                    handleAggregationWithHavingRequest();
                 }
 
                 disconnectFromDB();
@@ -509,7 +510,7 @@
         }
 
 		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['selectSubmit']) 
-        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit'])) {
+        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit']) || isset($_POST['update']) || isset($_POST['aggregationWithHavingSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest'])) {
             handleGETRequest();
