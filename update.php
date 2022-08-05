@@ -150,9 +150,9 @@
         <form method="POST" action="update.php"> <!--refresh page when submitted-->
             <input type="hidden" id="nestAggregationWithGroup" name="nestAggregationWithGroup">
 
-            Find recipes that is lower than average cooking time with same difficulty level of <input type="text" name="level">  <br /><br />
+            For each difficulty level, find the average cooking time of each and count the number of recipes of that difficulty that is lower than the average cooking time <br /><br />
 
-            <input type="submit" value="Search" name="nestAggregationWithGroupSubmit"></p>
+            <input type="submit" value="Submit" name="nestAggregationWithGroupSubmit"></p>
         </form>
 
         <?php
@@ -484,15 +484,20 @@
             global $db_conn;
             $num = $_POST['level'];
 
-            $result = executePlainSQL("SELECT r.RecipeName, r.Time
-                                       FROM Recipe r
-                                       WHERE Difficulty = $num and r.Time <= (SELECT AVG(r1.Time)
-                                                                             FROM Recipe r1
-                                                                             WHERE Difficulty = $num)");
+            // $result = executePlainSQL("SELECT r.RecipeName, r.Time
+            //                            FROM Recipe r
+            //                            WHERE Difficulty = $num and r.Time <= (SELECT AVG(r1.Time)
+            //                                                                  FROM Recipe r1
+            //                                                                  WHERE Difficulty = $num)");
+$result = executePlainSQL("SELECT AVG(r.Time), r.Difficulty
+                           FROM Recipe r 
+                           WHERE r.Time <= (SELECT AVG(r1.Time)
+                                             FROM Recipe r1)
+                           GROUP BY Difficulty ");
 
             echo "<br>Showing result:<br>"; 
             echo "<table>";
-            echo "<tr><th>Recipe</th><th>Time</th></tr>";
+            echo "<tr><th>Count</th><th>Difficulty Level</th></tr>";
 
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                 echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
