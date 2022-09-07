@@ -1,27 +1,16 @@
 <html>
     <head>
-        <title>CPSC 304 PHP/Oracle Demonstration</title>
+        <title>CPSC 304 Group 36 Project</title>
     </head>
 
     <body>
 
         <h1>Yummy Yummy</h1>
         <hr />
-
-        <h2>Reset</h2>
-        <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
-
-        <form method="POST" action="update.php">  
-            <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
-            <input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
-            <p><input type="submit" value="Reset" name="reset"></p>
-        </form>
-
-        <hr />
   
         <!--insert-->
         <h2>Create New Recipe</h2> 
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
 
             RecipeID: <input type="number" name="insID"> <br /><br />
@@ -37,26 +26,14 @@
         <hr />
 
         <!--upadte-->
-        <h2>Update Recipe Name</h2>
-        <p>The values are case sensitive and if you enter in the wrong case, the update statement will not do anything.</p>
-
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-            Old Name: <input type="text" name="oldName"> <br /><br />
-            New Name: <input type="text" name="newName"> <br /><br />
-
-            <input type="submit" value="Update" name="updateSubmit"></p>
-        </form>
-
-        <!--upadte with choice of choosing attribute-->
         <h2>Update Recipe</h2>
         <p>please input the recipe's name you would like to update</p>
-        <form method="POST" action="update.php">
+        <form method="POST" action="project.php">
             <input type="hidden" id="updateQueryRequest2" name="updateQueryRequest2">
             Recipe Name: <input type="text" name="recipename"> <br /><br />
 
         <p>please choose the info about the recipe you would like to update</p>
-        <!-- <form method="POST" action="update.php"> -->
+        <!-- <form method="POST" action="project.php"> -->
          <select name="RecipeAttributes">
          <option value="RecipeName">Recipe name</option>
          <option value="Instruction">Instruction</option>
@@ -71,9 +48,11 @@
         <input type="submit" value="Update" name="update">
         </form>
 
+        <hr />
+
         <!-- delete -->
         <h2>Delete Recipe</h2>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
             
             RecipeName: <input type="text" name="recipename"> <br /><br />
@@ -84,9 +63,9 @@
         <hr />
 
         <!-- selection -->
-        <h2> Filter</h2>
+        <h2> Filter Recipe According To Difficulty Level</h2>
         <p> The difficulty level ranges from 1 to 5, entering numbers out of range is illegal input. </p>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
 
             Difficulty level: <input type="text" name="difficulty"> <br /><br />
@@ -94,10 +73,12 @@
             <input type="submit" value="Search" name="selectSubmit"></p>
         </form>
 
-        <!-- updateion -->
-        <h2> Choose</h2>
+        <hr />
+
+        <!-- projection -->
+        <h2> Display Recipe Information</h2>
         <p> Choose from the following attributes: </p>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="chooseQueryRequest" name="chooseQueryRequest">
 
             RecipeID: <input type="checkbox" name="insID"> 
@@ -110,10 +91,12 @@
             <input type="submit" value="Search" name="chooseSubmit"></p>
         </form>
 
+        <hr />
+
         <!-- join -->
-        <h2> Display recipe's allergy information</h2>   
+        <h2> Display Recipe's Allergy Information</h2>   
         <p> Enter the recipe name below find out its allergy information </p>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="joinQueryRequest" name="joinQueryRequest">
 
              Recipe Name: <input type="text" name="rname"> <br /><br />
@@ -121,22 +104,22 @@
             <input type="submit" value="Display" name="searchSubmit"></p>
         </form>
 
-        <!--aggregation with group by-->
-        <h2>Count the Tuples in Recipe</h2>
-        <form method="GET" action="update.php"> <!--refresh page when submitted-->
-            <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+        <hr />
 
-            <!--Difficulty level: <input type="text" name="difficulty"> <br /><br />-->
+        <!--aggregation with group by-->
+        <h2> Count Recipe by Category </h2>
+        <form method="GET" action="project.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="countTupleRequest" name="countTupleRequest">
             
-            <input type="submit" name="countTuples"></p>
+            <input type="submit" value="Submit" name="countTuples"></p>
         </form>
 
         <hr />
 
          <!-- aggregation w/ having -->
-         <h2> Aggregation with having (need to change this later)</h2>
+         <h2> Aggregation With Having</h2>
         <p> Find out the number of users in each city </p>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="aggregationWithHavingRequest" name="aggregationWithHavingRequest">
 
             only include cities have more than : <input type="text" name="number">  person<br /><br />
@@ -144,16 +127,28 @@
             <input type="submit" value="Search" name="aggregationWithHavingSubmit"></p>
         </form>
 
+        <hr />
 
          <!-- nested aggregation w/ group by -->
-         <h2> Nested aggregation with group by</h2>
-        <form method="POST" action="update.php"> <!--refresh page when submitted-->
+         <h2> Nested Aggregation With Group By</h2>
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
             <input type="hidden" id="nestAggregationWithGroup" name="nestAggregationWithGroup">
 
             For each difficulty level, find the number of recipes of each difficulty that is lower than the overall average cooking time <br /><br />
 
             <input type="submit" value="Submit" name="nestAggregationWithGroupSubmit"></p>
         </form>
+
+        <hr />
+
+        <!--Division-->
+         <h2> Find Ingredients That Include In All Recipes </h2>
+        <form method="POST" action="project.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="divisionQueryRequest" name="divisionQueryRequest">
+            
+            <input type="submit" value="Find" name="Division"></p>
+        </form>
+        <hr />
 
         <?php
 		//this tells the system that it's no longer just parsing html; it's now parsing PHP
@@ -268,17 +263,6 @@
             OCILogoff($db_conn);
         }
 
-        function handleUpdateRequest() {
-            global $db_conn;
-
-            $old_name = $_POST['oldName'];
-            $new_name = $_POST['newName'];
-
-            // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE Recipe SET RecipeName='" . $new_name . "' WHERE RecipeName='" . $old_name . "'"); 
-            OCICommit($db_conn);
-        }
-
         function handleUpdateRequest2() {
             global $db_conn;
 
@@ -289,24 +273,10 @@
             $choose_recipe = $_POST['recipename'];
             $new_value = $_POST['newValue'];
 
-            // executePlainSQL("UPDATE Recipe SET $attributeToUpdate = $new_value WHERE RecipeName = '$choose_recipe'"); 
-
             executePlainSQL("UPDATE Recipe SET $attributeToUpdate='" . $new_value . "' WHERE RecipeName='" . $choose_recipe. "'"); 
             
             OCICommit($db_conn);
 
-        }
-
-        function handleResetRequest() {
-            global $db_conn;
-            // Delete all rows
-            executePlainSQL("DELETE FROM Recipe");
-            echo "<br> empty recipe table <br>";
-
-            // Create new table
-            //echo "<br> creating new table <br>";
-            //executePlainSQL("CREATE TABLE Recipe (RecipeID int PRIMARY KEY, UserName VARCHAR2(30), RecipeName VARCHAR2(15), Difficulty int, Instruction VARCHAR2(300), Time int)");
-            OCICommit($db_conn);
         }
 
         function handleInsertRequest() {
@@ -335,19 +305,14 @@
 
             $difficulty_level = $_POST['difficulty'];
 
-            //$sql = "SELECT Difficulty FROM Recipe WHERE Difficulty = $difficulty_level";
-            //$result = mysqli_query($db_conn,$sql);
             $result = executePlainSQL("SELECT * FROM Recipe WHERE Difficulty = $difficulty_level");
-
-            //$resultCheck = mysqli_num_rows($result); 
-            //$resultCheck = oci_num_rows($result);
 
             echo "<br>Retrieved data from table Recipe:<br>"; 
             echo "<table>";
             echo "<tr><th>RecipeName</th><th>Instruction</th><th>Time</th></tr>";
 
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                echo "<tr><td>" . $row[2] . "</td><td>". $row[4] . "</td><td>" . $row[5] . "</td></tr>"; // correspond to RecipeName, Instruction, Time
+                echo "<tr><td>" . $row[2] . "</td><td>". $row[4] . "</td><td>" . $row[5] . "</td></tr>"; 
             }
 
             echo "</table>";
@@ -355,7 +320,6 @@
             OCICommit($db_conn);
 
         }
-
 
         function handleChooseRequest() {
             global $db_conn;
@@ -411,33 +375,34 @@
 
             $recipe_name = $_POST['recipename'];
 
-            //$sql = "DELETE FROM Recipe WHERE RecipeName = recipe_name";
-
-            //$result = mysqli_query($db_conn, $sql);
-
             $result = executePlainSQL("DELETE FROM Recipe WHERE RecipeName = '$recipe_name'");
 
             if ($result === FALSE) {
                 printf("query could not be executed");
                 exit(1);
-            } //???
+            } 
             
             OCICommit($db_conn);
-            
-            //$db_conn->close();
 
         }
 
         function handleCountRequest() {
             global $db_conn;
 
-            $difficulty_level = $_POST['difficulty'];
+            $count = executePlainSQL("SELECT Count(RecipeID), CategoryName FROM Belong GROUP BY CategoryName ORDER BY Count(RecipeID) DESC");
 
-            $result = executePlainSQL("SELECT Count(*) FROM Recipe GROUP BY Difficulty");
+            echo "<br>Count Recipe by Category: <br>"; 
+            echo "<table>";
+            echo "<tr><th>Count</th><th>Category</th></tr>";
 
-            if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of tuples in recipe with difficulty of: " . $row[0] . "<br>";
+            while ($row = OCI_Fetch_Array($count, OCI_BOTH)) {
+                echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td></tr>"; 
             }
+
+            echo "</table>";
+
+            OCICommit($db_conn);
+
         }
 
         function handleJoinRequest() {
@@ -456,7 +421,6 @@
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                 echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
             }
-
             echo "</table>";
         }
 
@@ -476,20 +440,14 @@
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                 echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
             }
-                                     
-
+            echo "</table>";
         }
 
         function nestAggregationWithGroupRequet(){
             global $db_conn;
             $num = $_POST['level'];
 
-            // $result = executePlainSQL("SELECT r.RecipeName, r.Time
-            //                            FROM Recipe r
-            //                            WHERE Difficulty = $num and r.Time <= (SELECT AVG(r1.Time)
-            //                                                                  FROM Recipe r1
-            //                                                                  WHERE Difficulty = $num)");
-$result = executePlainSQL("SELECT COUNT(*), r.Difficulty
+            $result = executePlainSQL("SELECT COUNT(*), r.Difficulty
                            FROM Recipe r 
                            WHERE r.Time <= (SELECT AVG(r1.Time)
                                              FROM Recipe r1)
@@ -501,19 +459,38 @@ $result = executePlainSQL("SELECT COUNT(*), r.Difficulty
 
             while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
                 echo "<tr><td>" . $row[0] . "</td><td>". $row[1] . "</td><td>";
+            }                            
+        }
+
+        function handleDivisionRequest() {
+            global $db_conn;
+
+            $count = executePlainSQL("SELECT DISTINCT IngredientName  
+            FROM Includes inc
+            WHERE NOT EXISTS 
+            ((SELECT r.RecipeID FROM Recipe r)
+            MINUS 
+            (SELECT inc2.RecipeID FROM Includes inc2 WHERE inc2.IngredientName = inc.IngredientName))");
+
+            echo "<br>Find Ingredients include in all recipes: <br>"; 
+            echo "<table>";
+            echo "<tr><th>IngredientName</th><th>";
+
+            while ($row = OCI_Fetch_Array($count, OCI_BOTH)) {
+                echo "<tr><td>" . $row[0] . "</td></tr>"; 
             }
-                                    
+
+            echo "</table>";
+
+            OCICommit($db_conn);
+
         }
 
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
             if (connectToDB()) {
-                if (array_key_exists('resetTablesRequest', $_POST)) {
-                    handleResetRequest();
-                } else if (array_key_exists('updateQueryRequest', $_POST)) {
-                    handleUpdateRequest();
-                } else if (array_key_exists('insertQueryRequest', $_POST)) {
+                if (array_key_exists('insertQueryRequest', $_POST)) {
                     handleInsertRequest();
                 } else if (array_key_exists('selectQueryRequest', $_POST)) {
                     handleSelectRequest();
@@ -527,8 +504,10 @@ $result = executePlainSQL("SELECT COUNT(*), r.Difficulty
                     handleUpdateRequest2();
                 } else if (array_key_exists('aggregationWithHavingRequest', $_POST)) {
                     handleAggregationWithHavingRequest();
-                }else if (array_key_exists('nestAggregationWithGroup', $_POST)) {
+                } else if (array_key_exists('nestAggregationWithGroup', $_POST)) {
                     nestAggregationWithGroupRequet();
+                } else if (array_key_exists('divisionQueryRequest', $_POST)) {
+                    handleDivisionRequest();
                 }
 
                 disconnectFromDB();
@@ -542,17 +521,21 @@ $result = executePlainSQL("SELECT COUNT(*), r.Difficulty
                 if (array_key_exists('countTuples', $_GET)) {
                     handleCountRequest();
                 }
-
+                
                 disconnectFromDB();
             }
         }
 
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['selectSubmit']) 
-        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit']) || isset($_POST['update']) 
-        || isset($_POST['aggregationWithHavingSubmit']) ||isset($_POST['nestAggregationWithGroupSubmit'])) {
+		if (isset($_POST['insertSubmit']) || isset($_POST['update']) || isset($_POST['selectSubmit']) 
+        || isset($_POST['deleteSubmit']) || isset($_POST['chooseSubmit']) || isset($_POST['searchSubmit']) 
+        || isset($_POST['aggregationWithHavingSubmit'])||isset($_POST['nestAggregationWithGroupSubmit']) 
+        || isset($_POST['Division'])){
+            
             handlePOSTRequest();
+        
         } else if (isset($_GET['countTupleRequest'])) {
-            handleGETRequest();
+            
+            handleGETRequest(); 
         }
 		?>
 	</body>
